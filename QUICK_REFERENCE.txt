@@ -1,0 +1,169 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                  MANDI PRICE TRACKER - QUICK REFERENCE                 ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+📋 SETUP CHECKLIST
+──────────────────
+□ 1. Edit .env file - Add DB_PASSWORD and OPENGOV_API_KEY
+□ 2. Create database: psql -U postgres -c "CREATE DATABASE agrimatrix_prices;"
+□ 3. Run migrations: npm run migrate
+□ 4. Fetch initial data: npm run scheduler
+□ 5. Start server: npm run dev
+□ 6. Open browser: http://localhost:3000
+
+⚡ QUICK COMMANDS
+─────────────────
+npm install              → Install dependencies
+npm run migrate          → Setup database
+npm run test:db          → Test database connection
+npm run test:api         → Test API connection
+npm run scheduler        → Fetch data manually
+npm run dev              → Start development server
+npm start                → Start production server
+
+🌐 KEY ENDPOINTS
+────────────────
+http://localhost:3000                          → Dashboard UI
+http://localhost:3000/health                   → Health check
+http://localhost:3000/api/prices/latest        → Latest prices
+http://localhost:3000/api/prices/latest?state=Gujarat
+http://localhost:3000/api/prices/commodity/Tomato
+http://localhost:3000/api/markets              → All markets
+http://localhost:3000/api/commodities          → All commodities
+http://localhost:3000/api/sync/status          → Sync status
+
+📊 DATABASE TABLES
+──────────────────
+states           → Indian states (28+)
+districts        → Districts by state (450+)
+markets          → Markets/Mandis (2500+)
+commodities      → Commodity types (200+)
+daily_prices     → Daily price records (4000+ per day)
+sync_logs        → Data sync audit trail
+
+📁 PROJECT STRUCTURE
+────────────────────
+src/
+  ├── config/          → Configuration (database, app)
+  ├── database/        → Schema and migrations
+  ├── services/        → API client & data pipeline
+  ├── routes/          → API endpoints (14 total)
+  ├── schedulers/      → Cron jobs
+  ├── utils/           → Logger
+  └── server.js        → Main entry point
+public/
+  └── index.html       → Frontend dashboard
+logs/                  → Application logs
+
+🔧 CONFIGURATION (.env)
+───────────────────────
+DB_PASSWORD=your_password           ← REQUIRED
+OPENGOV_API_KEY=your_api_key       ← REQUIRED
+PORT=3000
+FETCH_SCHEDULE=0 6 * * *            (6 AM daily)
+START_SCHEDULER=true
+NODE_ENV=development
+
+📖 DOCUMENTATION
+────────────────
+GETTING_STARTED.md    → Quick 10-min setup
+SETUP.md              → Detailed installation
+API_DOCS.md           → Complete API reference
+PROJECT_SUMMARY.md    → System architecture
+BUILD_COMPLETE.md     → Full overview
+README.md             → Main documentation
+
+🎯 FEATURES
+───────────
+✓ Automated daily data sync (OpenGov API)
+✓ Duplicate prevention (unique constraints)
+✓ Latest price guarantee (optimized queries)
+✓ Historical data storage
+✓ Advanced filtering (state/district/market/commodity)
+✓ RESTful API (14 endpoints)
+✓ Beautiful dashboard UI
+✓ Comprehensive logging
+✓ Error handling & retry logic
+✓ Cron job scheduling
+
+🚨 TROUBLESHOOTING
+──────────────────
+Problem: Database connection failed
+Fix: Check PostgreSQL is running & .env has correct password
+
+Problem: API key invalid
+Fix: Get key from data.gov.in, update .env
+
+Problem: No data returned
+Fix: Run npm run scheduler to fetch initial data
+
+Problem: Port 3000 in use
+Fix: Change PORT in .env or kill existing process
+
+📊 DATA VOLUME
+──────────────
+Initial sync: ~4,800 records
+Daily updates: ~4,800 new records
+Annual: ~1.75 million records
+States: 28+ | Districts: 450+ | Markets: 2,500+ | Commodities: 200+
+
+⏰ SCHEDULER
+────────────
+Default: 6:00 AM IST daily
+Format: minute hour day month weekday
+Examples:
+  0 6 * * *     → 6:00 AM daily
+  30 7 * * *    → 7:30 AM daily
+  0 */6 * * *   → Every 6 hours
+
+📝 LOGS LOCATION
+────────────────
+logs/combined.log     → All logs
+logs/error.log        → Errors only
+logs/sync.log         → Data sync operations
+
+🔐 SECURITY
+───────────
+✓ Environment variables for secrets
+✓ Parameterized SQL queries
+✓ CORS enabled
+✓ Error sanitization
+✓ Graceful shutdown
+
+🎨 API FILTERS
+──────────────
+/api/prices/latest?state=Gujarat
+/api/prices/latest?district=Surat
+/api/prices/latest?market=Surat%20APMC
+/api/prices/latest?commodity=Tomato
+/api/prices/latest?limit=50&offset=0
+
+💡 TIPS
+───────
+→ Use npm run test:db before starting
+→ Check logs/ directory for errors
+→ Run scheduler manually first time
+→ Set START_SCHEDULER=true for production
+→ Keep .env file secure (never commit)
+→ Backup database regularly
+
+🌟 TECH STACK
+─────────────
+Backend:     Node.js + Express
+Database:    PostgreSQL 14+
+API Client:  Axios
+Scheduler:   node-cron
+Logging:     Winston
+Frontend:    HTML5 + Vanilla JS
+
+📞 SUPPORT
+──────────
+1. Read GETTING_STARTED.md
+2. Check logs in logs/ directory
+3. Run test scripts (test:db, test:api)
+4. Review API_DOCS.md for endpoint details
+
+╔════════════════════════════════════════════════════════════════════════╗
+║                     STATUS: ✅ READY TO USE                            ║
+║      Follow GETTING_STARTED.md to launch in 10 minutes!               ║
+╚════════════════════════════════════════════════════════════════════════╝
