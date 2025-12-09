@@ -14,9 +14,10 @@ module.exports = {
   api: {
     baseUrl: process.env.OPENGOV_API_URL || 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070',
     apiKey: process.env.OPENGOV_API_KEY,
-    timeout: 30000, // 30 seconds
+    timeout: 60000, // 60 seconds
     retryAttempts: 3,
     retryDelay: 2000, // 2 seconds
+    batchDelay: 1000, // 1 second delay between batches
   },
 
   // Server configuration

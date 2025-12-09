@@ -13,7 +13,7 @@ async function checkData() {
         (SELECT COUNT(*) FROM markets) as markets,
         (SELECT COUNT(*) FROM commodities) as commodities,
         (SELECT COUNT(*) FROM daily_prices) as prices,
-        (SELECT MAX(arrival_date) FROM daily_prices) as latest_date
+        (SELECT MAX(arrival_date)::text FROM daily_prices) as latest_date
     `);
     
     const data = counts.rows[0];
@@ -24,7 +24,7 @@ async function checkData() {
     console.log(`   Markets:      ${data.markets}`);
     console.log(`   Commodities:  ${data.commodities}`);
     console.log(`   Price Records: ${data.prices}`);
-    console.log(`   Latest Date:  ${data.latest_date ? data.latest_date.toISOString().split('T')[0] : 'N/A'}`);
+    console.log(`   Latest Date:  ${data.latest_date || 'N/A'}`);
     
     // Sample data
     const samples = await pool.query(`
@@ -34,7 +34,7 @@ async function checkData() {
         m.name as market,
         c.name as commodity,
         dp.modal_price,
-        dp.arrival_date
+        dp.arrival_date::text as arrival_date
       FROM daily_prices dp
       JOIN markets m ON dp.market_id = m.id
       JOIN districts d ON m.district_id = d.id
@@ -48,7 +48,7 @@ async function checkData() {
     console.log('─────────────────────────────');
     samples.rows.forEach((r, i) => {
       console.log(`${i + 1}. ${r.commodity} @ ${r.market}, ${r.district}, ${r.state}`);
-      console.log(`   Price: ₹${r.modal_price} | Date: ${r.arrival_date.toISOString().split('T')[0]}`);
+      console.log(`   Price: ₹${r.modal_price} | Date: ${r.arrival_date}`);
     });
     
     console.log('\n✅ Database is working perfectly!\n');
