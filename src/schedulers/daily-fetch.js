@@ -24,8 +24,8 @@ class DailyFetchScheduler {
     logger.info('=== Starting scheduled data fetch ===');
 
     try {
-      // Fetch data from OpenGov API
-      const apiResponse = await opengovClient.fetchMandiPrices();
+      // Fetch ALL data from OpenGov API with pagination
+      const apiResponse = await opengovClient.fetchAllRecords();
 
       if (!apiResponse.success) {
         throw new Error(`API fetch failed: ${apiResponse.error}`);

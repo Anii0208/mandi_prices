@@ -240,12 +240,18 @@ class DataIngestionService {
   async createSyncLog(data) {
     const client = await pool.connect();
     try {
+      // Convert Unix timestamp to ISO date if needed
+      let apiDate = data.apiUpdatedDate;
+      if (apiDate && typeof apiDate === 'number') {
+        apiDate = new Date(apiDate * 1000).toISOString();
+      }
+      
       const result = await client.query(
         `INSERT INTO sync_logs 
          (records_fetched, api_updated_date, status) 
          VALUES ($1, $2, 'running') 
          RETURNING id`,
-        [data.recordsFetched, data.apiUpdatedDate]
+        [data.recordsFetched, apiDate]
       );
       return result.rows[0].id;
     } finally {

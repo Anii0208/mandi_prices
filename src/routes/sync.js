@@ -88,8 +88,8 @@ router.get('/stats', async (req, res) => {
         (SELECT COUNT(*) FROM markets) AS total_markets,
         (SELECT COUNT(*) FROM commodities) AS total_commodities,
         (SELECT COUNT(*) FROM daily_prices) AS total_price_records,
-        (SELECT MAX(arrival_date) FROM daily_prices) AS latest_data_date,
-        (SELECT MIN(arrival_date) FROM daily_prices) AS earliest_data_date,
+        (SELECT MAX(arrival_date)::text FROM daily_prices) AS latest_data_date,
+        (SELECT MIN(arrival_date)::text FROM daily_prices) AS earliest_data_date,
         (SELECT MAX(sync_date) FROM sync_logs WHERE status = 'completed') AS last_successful_sync
     `;
 

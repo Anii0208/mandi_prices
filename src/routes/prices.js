@@ -20,7 +20,7 @@ router.get('/latest', async (req, res) => {
         c.name AS commodity,
         c.variety,
         c.grade,
-        dp.arrival_date,
+        dp.arrival_date::text AS arrival_date,
         dp.min_price,
         dp.max_price,
         dp.modal_price
@@ -103,7 +103,7 @@ router.get('/commodity/:name', async (req, res) => {
         c.name AS commodity,
         c.variety,
         c.grade,
-        dp.arrival_date,
+        dp.arrival_date::text AS arrival_date,
         dp.min_price,
         dp.max_price,
         dp.modal_price
@@ -170,7 +170,7 @@ router.get('/history', async (req, res) => {
         c.name AS commodity,
         c.variety,
         c.grade,
-        dp.arrival_date,
+        dp.arrival_date::text AS arrival_date,
         dp.min_price,
         dp.max_price,
         dp.modal_price
@@ -226,8 +226,8 @@ router.get('/stats', async (req, res) => {
         AVG(dp.modal_price) AS avg_price,
         MIN(dp.min_price) AS lowest_price,
         MAX(dp.max_price) AS highest_price,
-        MIN(dp.arrival_date) AS earliest_date,
-        MAX(dp.arrival_date) AS latest_date
+        MIN(dp.arrival_date)::text AS earliest_date,
+        MAX(dp.arrival_date)::text AS latest_date
       FROM daily_prices dp
       JOIN commodities c ON dp.commodity_id = c.id
       WHERE c.name ILIKE $1

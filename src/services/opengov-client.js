@@ -20,7 +20,7 @@ class OpenGovApiClient {
     const defaultParams = {
       'api-key': this.apiKey,
       format: 'json',
-      limit: 'all',
+      limit: 10000,  // Changed from 'all' to 10000
       offset: 0,
       ...params,
     };
@@ -60,6 +60,21 @@ class OpenGovApiClient {
               created: response.data.created_date,
             },
           };
+        } else if (response.data && response.data.records && response.data.records.length === 0) {
+          // API returned valid response but with 0 records (e.g., offset beyond available data)
+          logger.info('API returned 0 records - offset may be beyond available data');
+          return {
+            success: true,
+            data: { ...response.data, records: [] },
+            metadata: {
+              total: response.data.total || 0,
+              count: 0,
+              limit: response.data.limit,
+              offset: response.data.offset,
+              updated: response.data.updated_date,
+              created: response.data.created_date,
+            },
+          };
         } else {
           throw new Error('Invalid API response format');
         }
@@ -93,6 +108,79 @@ class OpenGovApiClient {
     return {
       success: false,
       error: lastError.message,
+    };
+  }
+
+  /**
+   * Fetch ALL available records with pagination
+   * @returns {Promise<Object>} Combined response with all records
+   */
+  async fetchAllRecords() {
+    const batchSize = 10000;
+    let offset = 0;
+    let allRecords = [];
+    let totalRecords = 0;
+    let metadata = null;
+
+    logger.info('Starting paginated fetch of all records');
+
+    while (true) {
+      const result = await this.fetchMandiPrices({ limit: batchSize, offset });
+      
+      if (!result.success) {
+        return result;
+      }
+
+      const records = result.data.records;
+      allRecords = allRecords.concat(records);
+      
+      if (!metadata) {
+        metadata = result.metadata;
+        totalRecords = result.data.total;
+        logger.info(`Total records available: ${totalRecords}`);
+      }
+
+      logger.info(`Fetched batch: ${records.length} records (offset: ${offset})`);
+
+      // Check if we've fetched all records or API returned empty batch
+      if (records.length === 0 || offset + records.length >= totalRecords || records.length < batchSize) {
+        if (records.length === 0 && allRecords.length > 0) {
+          logger.warn(`API returned 0 records at offset ${offset}. This may be an API limit. Total fetched: ${allRecords.length}`);
+        }
+        break;
+      }
+
+      offset += batchSize;
+
+      // Check if we've fetched all records
+      if (offset + records.length >= totalRecords || records.length < batchSize) {
+        break;
+      }
+
+      offset += batchSize;
+      
+      // Add delay between batches to avoid overwhelming the API
+      if (offset < totalRecords) {
+        logger.info('Waiting 1 second before next batch...');
+        await this.sleep(1000);
+      }
+    }
+
+    logger.info(`Completed paginated fetch: ${allRecords.length} total records`);
+
+    return {
+      success: true,
+      data: {
+        ...metadata,
+        records: allRecords,
+        total: totalRecords,
+        count: allRecords.length,
+      },
+      metadata: {
+        ...metadata,
+        total: totalRecords,
+        count: allRecords.length,
+      },
     };
   }
 
